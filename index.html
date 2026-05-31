@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MemoCurve">
+<title>MemoCurve</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#ffffff;--bg2:#f5f5f7;--bg3:#ebebed;
+  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);
+  --text:#1a1a1e;--text2:#6e6e80;--text3:#a0a0b0;
+  --green:#059669;--green-dim:rgba(5,150,105,.1);--green-light:#d1fae5;
+  --amber:#d97706;--amber-dim:rgba(217,119,6,.1);--amber-light:#fef3c7;
+  --red:#dc2626;--red-dim:rgba(220,38,38,.1);--red-light:#fee2e2;
+  --blue:#2563eb;--blue-dim:rgba(37,99,235,.1);
+  --violet:#7c3aed;--violet-dim:rgba(124,58,237,.1);
+  --tab-h:82px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Outfit',sans-serif;color:var(--text);font-size:16px;overscroll-behavior:none}
+#app{display:flex;flex-direction:column;height:100%;height:100dvh}
+#screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-top:var(--safe-top)}
+#tabbar{
+  flex-shrink:0;height:calc(60px + var(--safe-bot));padding-bottom:var(--safe-bot);
+  background:rgba(255,255,255,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);display:flex;align-items:center;padding-top:0;
+  gap:6px;padding-left:8px;padding-right:8px;z-index:50;
+}
+.tab-btn{
+  flex:1;height:40px;border:none;background:none;cursor:pointer;
+  color:var(--text3);font-size:14px;font-weight:500;font-family:'Outfit',sans-serif;
+  border-radius:12px;transition:all .18s;position:relative;
+  -webkit-user-select:none;user-select:none;
+  letter-spacing:-.2px;
+}
+.tab-btn:active{transform:scale(.95)}
+.tab-btn.active{
+  background:var(--text);color:#fff;font-weight:700;
+}
+.tab-badge{position:absolute;top:4px;right:calc(50% - 20px);background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;padding:0 5px;display:none;align-items:center;justify-content:center}
+.tab-badge.show{display:flex}
+.page{display:none;min-height:100%;padding-bottom:24px}
+.page.active{display:block}
+.ph{padding:20px 20px 12px}
+.ph-title{font-size:28px;font-weight:700;letter-spacing:-.5px;color:var(--text)}
+.ph-sub{font-size:13px;color:var(--text3);margin-top:2px}
+.section-hd{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding:0 20px}
+
+/* chips */
+.deck-scroll{display:flex;gap:8px;padding:0 20px 16px;overflow-x:auto;scrollbar-width:none}
+.deck-scroll::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg);color:var(--text2);transition:all .15s;white-space:nowrap;-webkit-user-select:none;user-select:none;box-shadow:var(--shadow)}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.chip.add-chip{border-style:dashed;color:var(--text3);border-color:var(--text3);box-shadow:none}
+
+/* ── HOME ── */
+
+/* ── QUIZ CALENDAR ── */
+.quiz-cal{padding:0 16px 16px}
+.qcal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.qcal-month{font-size:16px;font-weight:700;color:var(--text)}
+.qcal-nav{display:flex;gap:4px}
+.qcal-nav-btn{background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;min-width:32px;height:32px;padding:0 8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:13px;font-weight:600;-webkit-user-select:none;user-select:none;font-family:'Outfit',sans-serif}
+.qcal-nav-btn:active{background:var(--bg3)}
+.qcal-today-btn{min-width:44px;font-size:12px}
+.qcal-stage-row{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;min-height:14px;margin-top:2px}
+.qcal-stage-tag{font-size:8px;font-weight:700;color:var(--text2);background:var(--bg3);border-radius:4px;padding:1px 3px;white-space:nowrap;line-height:1.4}
+.qcal-cell-cnt{font-size:10px;font-weight:700;color:var(--amber);margin-top:2px;display:block}
+.qcal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.qcal-dow-cell{text-align:center;font-size:10px;font-weight:600;color:var(--text3);padding:4px 0}
+.qcal-dow-cell:first-child{color:#dc2626}
+.qcal-dow-cell:last-child{color:#2563eb}
+.qcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.qcal-cell{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;position:relative;-webkit-user-select:none;user-select:none;transition:background .1s}
+.qcal-cell.empty{cursor:default}
+.qcal-cell:not(.empty):active{background:var(--bg3)}
+.qcal-cell.today{background:var(--green);box-shadow:0 2px 8px rgba(5,150,105,.3)}
+.qcal-cell.today.overdue-today{background:var(--red);box-shadow:0 2px 8px rgba(220,38,38,.3)}
+.qcal-cell.today .qcal-num{color:#fff}
+.qcal-cell.selected:not(.today){background:var(--green-dim);border:1.5px solid var(--green)}
+.qcal-cell.has-due:not(.today):not(.selected){background:var(--amber-dim)}
+.qcal-cell.past:not(.today):not(.selected){opacity:.5}
+.qcal-num{font-size:13px;font-weight:600;color:var(--text);line-height:1}
+.qcal-cell.today .qcal-num{color:#fff;font-weight:700}
+.qcal-dot-row{display:flex;gap:2px;align-items:center;justify-content:center;height:8px}
+.qcal-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.qcal-count-badge{font-size:9px;font-weight:700;color:var(--amber);line-height:1}
+.qcal-cell.today .qcal-count-badge{color:rgba(255,255,255,.85)}
+.qcal-legend{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+.qcal-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)}
+.qcal-legend-dot{width:8px;height:8px;border-radius:50%}
+.qcal-selected-label{font-size:13px;font-weight:600;color:var(--green);padding:0 2px}
+.qcal-view-toggle{display:flex;gap:3px;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--border)}
+.qcal-vbtn{flex:1;padding:5px 4px;border:none;background:none;border-radius:7px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;white-space:nowrap;-webkit-user-select:none;user-select:none}
+.qcal-vbtn.active{background:var(--bg);color:var(--green);box-shadow:var(--shadow)}
+/* 3-day view: bigger cells with count */
+.qcal-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.qcal-cell-3{border-radius:14px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:var(--bg2);border:1.5px solid var(--border);-webkit-user-select:none;user-select:none;transition:all .1s}
+.qcal-cell-3:active{opacity:.75}
+.qcal-cell-3.today{background:var(--green);border-color:var(--green);box-shadow:0 2px 8px rgba(5,150,105,.3)}
+.qcal-cell-3.today.overdue-today{background:var(--red);border-color:var(--red);box-shadow:0 2px 8px rgba(220,38,38,.3)}
+.qcal-cell-3.selected:not(.today){background:var(--green-dim);border-color:var(--green)}
+.qcal-cell-3.has-due:not(.today):not(.selected){background:var(--amber-dim);border-color:rgba(217,119,6,.3)}
+.qcal-cell-3.past:not(.today):not(.selected){opacity:.5}
+.qcal-3-dow{font-size:11px;font-weight:600;color:var(--text3)}
+.qcal-cell-3.today .qcal-3-dow,.qcal-cell-3.today .qcal-3-num,.qcal-cell-3.today .qcal-3-cnt{color:#fff}
+.qcal-3-num{font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.qcal-3-cnt{font-size:12px;font-weight:700;color:var(--amber)}
+.qcal-3-cnt.zero{color:var(--text3);font-weight:400}
+/* week view: 7 cols with more height */
+.qcal-grid-7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.qcal-cell-7{border-radius:10px;padding:8px 3px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:var(--bg2);border:1.5px solid transparent;-webkit-user-select:none;user-select:none;transition:all .1s}
+.qcal-cell-7:active{opacity:.75}
+.qcal-cell-7.today{background:var(--green);box-shadow:0 2px 8px rgba(5,150,105,.3)}
+.qcal-cell-7.today.overdue-today{background:var(--red);box-shadow:0 2px 8px rgba(220,38,38,.3)}
+.qcal-cell-7.today .qcal-7-num,.qcal-cell-7.today .qcal-7-dow{color:#fff}
+.qcal-cell-7.selected:not(.today){background:var(--green-dim);border-color:var(--green)}
+.qcal-cell-7.has-due:not(.today):not(.selected){background:var(--amber-dim)}
+.qcal-cell-7.past:not(.today):not(.selected){opacity:.5}
+.qcal-7-dow{font-size:9px;font-weight:600;color:var(--text3)}
+.qcal-7-num{font-size:14px;font-weight:700;color:var(--text);line-height:1}
+.qcal-7-cnt{font-size:10px;font-weight:700;color:var(--amber)}
+.qcal-7-cnt.zero{color:transparent}
+
+.deck-big-scroll{display:flex;flex-direction:column;gap:8px;padding:0 16px;margin-bottom:20px}
+.deck-big{background:var(--bg);border:1.5px solid var(--border);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s;-webkit-user-select:none;user-select:none;box-shadow:var(--shadow)}
+.deck-big:active{opacity:.75;transform:scale(.99)}
+.deck-big.active-deck{border-color:var(--green)}
+.deck-big-em{font-size:26px;flex-shrink:0}
+.deck-big-body{flex:1}
+.deck-big-name{font-size:15px;font-weight:600;color:var(--text)}
+.deck-big-meta{font-size:12px;color:var(--text3);margin-top:2px}
+.deck-big-arrow{color:var(--text3);font-size:18px}
+
+/* ── ADD ── */
+.form-block{margin:0 16px 16px;background:var(--bg);border:1.5px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:12px;font-weight:600;color:var(--text3);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+input[type=text],select,textarea{width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:15px;font-family:'Outfit',sans-serif;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .15s;resize:vertical}
+input[type=text]:focus,select:focus,textarea:focus{border-color:var(--green)}
+textarea{min-height:72px;line-height:1.6}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23a0a0b0' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.btn-full{width:100%;background:var(--green);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px;-webkit-user-select:none;user-select:none;box-shadow:0 2px 8px var(--green-dim)}
+.btn-full:active{opacity:.8}
+.btn-ghost{width:100%;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:14px;padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;margin-top:10px;-webkit-user-select:none;user-select:none;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-ghost:active{opacity:.75}
+
+/* ── WORDS ── */
+.sort-bar{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
+.sort-bar::-webkit-scrollbar{display:none}
+.sort-chip{flex-shrink:0;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--text3);-webkit-user-select:none;user-select:none;transition:all .15s}
+.sort-chip.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.words-add-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:5px;flex-shrink:0}
+
+/* file group */
+.deck-group{margin:0 16px 20px}
+.deck-group-header{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 0;cursor:pointer;-webkit-user-select:none;user-select:none}
+.deck-group-header.collapsed .dgh-chevron{transform:rotate(0)}
+.dgh-color{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.dgh-name{font-size:15px;font-weight:700;color:var(--text);flex:1}
+.dgh-meta{font-size:12px;color:var(--text3)}
+.dgh-edit-btn{background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:12px;font-weight:600;padding:4px 10px;cursor:pointer;font-family:'Outfit',sans-serif;-webkit-user-select:none;user-select:none;white-space:nowrap;flex-shrink:0}
+.dgh-edit-btn:active{background:var(--bg3)}
+.dgh-chevron{font-size:11px;color:var(--text3);transition:transform .2s;display:inline-block;flex-shrink:0}.dgh-chevron.open{transform:rotate(180deg)}
+.deck-group-body{border:1.5px solid var(--border);border-radius:14px;overflow:hidden}
+
+/* swipe word row */
+.swipe-wrap{overflow:hidden;position:relative}
+.swipe-wrap:not(:last-child) .word-row{border-bottom:1px solid var(--border)}
+.swipe-inner{display:flex;transition:transform .2s cubic-bezier(.4,0,.2,1);touch-action:pan-y}
+.word-row{background:var(--bg);padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-user-select:none;user-select:none;flex:0 0 100%;min-width:100%}
+.word-row:active{background:var(--bg2)}
+.wr-body{flex:1;min-width:0}
+.wr-front{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wr-back{font-size:12px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wr-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.wr-miss{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0}
+.swipe-actions{display:flex;flex:0 0 auto}
+.swipe-edit-btn{background:var(--blue);color:#fff;border:none;width:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer}
+.swipe-del-btn{background:var(--red);color:#fff;border:none;width:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer}
+
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.b-new{background:var(--blue-dim);color:var(--blue)}
+.b-due{background:var(--red-dim);color:var(--red)}
+.b-soon{background:var(--amber-dim);color:var(--amber)}
+.b-ok{background:var(--green-dim);color:var(--green)}
+.b-master{background:var(--violet-dim);color:var(--violet)}
+
+/* ── QUIZ ── */
+.quiz-stage-header{padding:0 16px 12px}
+.stage-tabs{display:flex;gap:0;background:var(--bg2);border-radius:14px;padding:3px;border:1px solid var(--border);overflow:hidden}
+.stab{flex:1;padding:8px 2px;border:none;background:none;color:var(--text3);font-size:10px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;border-radius:11px;transition:all .2s;-webkit-user-select:none;user-select:none;text-align:center;line-height:1.3}
+.stab .stab-count{display:block;font-size:15px;font-weight:700;margin-bottom:1px;color:var(--text2)}
+.stab.active{background:var(--bg);box-shadow:var(--shadow)}
+.stab.active .stab-count{color:var(--green)}
+.stab.active{color:var(--green)}
+.stab.has-repeat .stab-count::after{content:'🔁';font-size:9px;margin-left:2px}
+
+.quiz-wrap{padding:0 16px}
+.q-progress{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.q-prog-bar{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.q-prog-fill{height:100%;background:var(--green);border-radius:3px;transition:width .35s}
+.q-prog-txt{font-size:12px;color:var(--text3);white-space:nowrap}
+
+.flip-card{background:var(--bg);border:1.5px solid var(--border);border-radius:20px;padding:36px 22px;text-align:center;min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:16px;transition:transform .1s,border-color .2s;-webkit-user-select:none;user-select:none;box-shadow:var(--shadow-md)}
+.flip-card:active{transform:scale(.98)}
+.flip-card.revealed{border-color:var(--green);cursor:default}
+.flip-card.revealed:active{transform:none}
+.fc-deck{font-size:11px;color:var(--text3);margin-bottom:8px}
+.fc-word{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.5px;margin-bottom:8px;line-height:1.3;word-break:break-word}
+.fc-hint{font-size:13px;color:var(--text3)}
+.fc-miss{font-size:12px;color:var(--red);font-weight:600;margin-top:6px}
+.fc-divider{width:36px;height:1.5px;background:var(--border2);margin:14px auto}
+.fc-answer{font-size:17px;font-weight:600;color:var(--green);line-height:1.5;word-break:break-word}
+.fc-memo{font-size:13px;color:var(--text3);margin-top:8px;font-style:italic;line-height:1.5}
+
+.grade-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.gbtn{padding:20px 12px;border-radius:16px;border:1.5px solid transparent;font-size:17px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;transition:opacity .15s;-webkit-user-select:none;user-select:none}
+.gbtn:active{opacity:.7}
+.g-again{background:var(--red-dim);color:var(--red);border-color:rgba(220,38,38,.2)}
+.g-good{background:var(--green-dim);color:var(--green);border-color:rgba(5,150,105,.2)}
+
+.quiz-empty{text-align:center;padding:44px 20px}
+.quiz-empty i{font-size:48px;color:var(--text3);display:block;margin-bottom:10px}
+.quiz-empty p{font-size:15px;color:var(--text3)}
+.quiz-done{text-align:center;padding:44px 20px 28px}
+.qd-icon{font-size:56px;color:var(--green);display:block;margin-bottom:12px}
+.qd-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px}
+.qd-sub{font-size:14px;color:var(--text3);margin-bottom:22px}
+
+/* history */
+.hist-item{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;-webkit-user-select:none;user-select:none;transition:background .1s}
+.hist-item:active{background:var(--bg2)}
+.hist-color{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.hist-body{flex:1}
+.hist-title{font-size:14px;font-weight:600;color:var(--text)}
+.hist-meta{font-size:12px;color:var(--text3);margin-top:2px}
+.hist-retry{font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:'Outfit',sans-serif;flex-shrink:0}
+
+/* file review btn in words */
+.file-review-btn{font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;-webkit-user-select:none;user-select:none;white-space:nowrap;flex-shrink:0;color:#fff}
+.file-review-btn:active{opacity:.8}
+
+/* file mode buttons in sheet */
+.file-mode-btn{width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;font-family:'Outfit',sans-serif;-webkit-user-select:none;user-select:none;transition:all .15s;text-align:left}
+.file-mode-btn:active{opacity:.75;transform:scale(.98)}
+.file-mode-btn.disabled{opacity:.35;cursor:default}
+.fmb-icon{font-size:26px;flex-shrink:0;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--bg3)}
+.fmb-body{flex:1}
+.fmb-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.fmb-sub{font-size:12px;color:var(--text3)}
+
+/* repeat-mode notice */
+.repeat-notice{background:var(--red-dim);border:1px solid rgba(220,38,38,.2);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--red);font-weight:500;display:flex;align-items:center;gap:8px}
+
+/* friday */
+.friday-banner{margin:0 16px 16px;background:var(--violet-dim);border:1.5px solid rgba(124,58,237,.25);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;-webkit-user-select:none;user-select:none;box-shadow:var(--shadow)}
+.friday-banner:active{opacity:.75}
+.friday-banner i{font-size:22px;color:var(--violet);flex-shrink:0}
+.fb-txt strong{display:block;font-size:14px;color:var(--violet);margin-bottom:2px}
+.fb-txt span{font-size:12px;color:var(--text3)}
+.fb-go{background:var(--violet);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Outfit',sans-serif}
+
+/* ── CURVE ── */
+.curve-card{margin:0 16px 16px;background:var(--bg);border:1.5px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.curve-card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px}
+.sched-item{display:flex;align-items:center;gap:14px;background:var(--bg);padding:14px 16px;border:1.5px solid var(--border);border-radius:14px;margin:0 16px 8px;box-shadow:var(--shadow)}
+.sched-dot{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.sched-body strong{font-size:14px;font-weight:600;color:var(--text);display:block}
+.sched-body span{font-size:12px;color:var(--text3)}
+
+.ret-chart{margin:0 16px 16px;background:var(--bg);border:1.5px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.ret-chart-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.ret-bars{display:flex;flex-direction:column;gap:8px}
+.ret-row{display:flex;align-items:center;gap:10px}
+.ret-row-label{font-size:12px;color:var(--text2);width:80px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ret-row-bar{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.ret-row-fill{height:100%;border-radius:4px}
+.ret-row-pct{font-size:12px;color:var(--text3);width:36px;text-align:right;flex-shrink:0}
+
+/* ── Sheet ── */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:flex-end;justify-content:center}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--bg);border-radius:22px 22px 0 0;width:100%;max-width:500px;padding:0 0 calc(20px + var(--safe-bot));animation:slideUp .3s cubic-bezier(.4,0,.2,1);box-shadow:0 -4px 24px rgba(0,0,0,.12)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 20px}
+.sheet-title{font-size:17px;font-weight:700;color:var(--text);padding:0 20px;margin-bottom:20px}
+.sheet-body{padding:0 20px}
+.sheet-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding:0 20px}
+.s-cancel{background:none;border:1.5px solid var(--border2);border-radius:12px;padding:12px 20px;color:var(--text2);font-size:15px;font-family:'Outfit',sans-serif;cursor:pointer}
+.s-ok{background:var(--green);border:none;border-radius:12px;padding:12px 24px;color:#fff;font-size:15px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer}
+.detail-word{font-size:24px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3;word-break:break-word}
+.detail-meaning{font-size:16px;color:var(--green);margin-bottom:10px;line-height:1.5;word-break:break-word}
+.detail-memo{font-size:14px;color:var(--text3);font-style:italic;margin-bottom:14px;line-height:1.5}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border)}
+.detail-row:last-of-type{border-bottom:none}
+.detail-row-label{font-size:13px;color:var(--text3)}
+.detail-row-val{font-size:13px;font-weight:600;color:var(--text)}
+.del-btn{width:100%;background:var(--red-dim);color:var(--red);border:1.5px solid rgba(220,38,38,.2);border-radius:14px;padding:14px;font-size:15px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;margin-top:10px}
+.del-btn:active{opacity:.75}
+
+.toast{position:fixed;bottom:calc(var(--tab-h) + var(--safe-bot) + 16px);left:50%;transform:translateX(-50%) translateY(10px);background:rgba(26,26,30,.92);backdrop-filter:blur(12px);border-radius:12px;padding:10px 20px;font-size:14px;font-weight:500;color:#fff;white-space:nowrap;opacity:0;transition:all .25s;z-index:300;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;padding:44px 20px 28px}
+.empty i{font-size:48px;color:var(--text3);display:block;margin-bottom:10px}
+.empty p{font-size:15px;color:var(--text3)}
+
+/* ── HABIT ANALYSIS ── */
+.habit-card{margin:0 16px 20px;background:var(--bg);border:1.5px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.habit-streak-row{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.habit-streak-main{text-align:center;flex-shrink:0}
+.habit-streak-num{font-size:52px;font-weight:700;color:var(--green);line-height:1}
+.habit-streak-label{font-size:13px;color:var(--text3);margin-top:2px}
+.habit-streak-stats{display:flex;gap:0;flex:1;justify-content:space-around;background:var(--bg2);border-radius:14px;padding:12px 8px}
+.habit-stat{text-align:center;flex:1}
+.habit-stat-val{font-size:18px;font-weight:700;color:var(--text)}
+.habit-stat-label{font-size:11px;color:var(--text3);margin-top:2px}
+.habit-week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:14px}
+.hw-cell{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px}
+.hw-cell.active{background:var(--green)}
+.hw-cell.missed{background:var(--red-dim)}
+.hw-cell.empty{background:var(--bg2)}
+.hw-dow{font-size:9px;color:var(--text3);font-weight:600}
+.hw-cell.active .hw-dow{color:rgba(255,255,255,.7)}
+.hw-num{font-size:11px;font-weight:600;color:var(--text)}
+.hw-cell.active .hw-num{color:#fff}
+.habit-grid-wrap{position:relative}
+.habit-grid{display:flex;gap:2px;flex-wrap:wrap;flex-direction:row}
+.hg-cell{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.hg-cell.done{background:var(--green)}
+.hg-cell.missed{background:var(--red-dim)}
+.hg-cell.future{background:var(--bg2)}
+.habit-grid-label{font-size:10px;color:var(--text3);margin-top:4px;text-align:right}
+
+/* sabori banner */
+.sabori-banner{
+  position:fixed;top:calc(var(--safe-top) + 8px);left:16px;right:16px;
+  z-index:400;background:var(--red);color:#fff;
+  border-radius:14px;padding:14px 16px;
+  box-shadow:0 4px 20px rgba(220,38,38,.35);
+  display:flex;align-items:center;gap:12px;
+  animation:slideDown .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideDown{from{transform:translateY(-120%);opacity:0}to{transform:translateY(0);opacity:1}}
+.sb-body{flex:1}
+.sb-title{font-size:15px;font-weight:700;margin-bottom:2px}
+.sb-sub{font-size:12px;opacity:.85}
+.sb-close{background:rgba(255,255,255,.25);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:6px 12px;cursor:pointer;font-family:'Outfit',sans-serif;flex-shrink:0}
+
+.day-panel{padding:0 16px 16px}
+.day-panel-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.day-panel-label{font-size:15px;font-weight:700;color:var(--text)}
+.day-panel-meta{font-size:12px;color:var(--text3);margin-top:1px}
+.day-panel-decks{background:var(--bg);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px}
+.dp-deck-row{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background .1s;-webkit-user-select:none;user-select:none}
+.dp-deck-row:not(:last-child){border-bottom:1px solid var(--border)}
+.dp-deck-row:active{background:var(--bg2)}
+.dp-deck-row.selected{background:var(--green-dim)}
+.dp-em{font-size:22px;flex-shrink:0}
+.dp-body{flex:1;min-width:0}
+.dp-name{font-size:15px;font-weight:600;color:var(--text)}
+.dp-chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.dp-chip{font-size:11px;color:var(--text3);background:var(--bg3);border-radius:6px;padding:2px 7px;border:1px solid var(--border)}
+.dp-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.dp-cnt{font-size:13px;font-weight:700;color:var(--amber)}
+.dp-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border2);background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.dp-check.checked{background:var(--green);border-color:var(--green)}
+.dp-check.checked::after{content:'✓';color:#fff;font-size:13px;font-weight:700}
+.day-panel-actions{display:flex;gap:8px}
+.dp-btn-all{flex:1;background:var(--bg2);border:1.5px solid var(--border2);border-radius:14px;padding:13px;font-size:14px;font-weight:600;color:var(--text2);font-family:'Outfit',sans-serif;cursor:pointer;-webkit-user-select:none;user-select:none;transition:all .15s}
+.dp-btn-all:active{opacity:.75}
+.dp-btn-start{flex:2;background:var(--green);border:none;border-radius:14px;padding:13px;font-size:15px;font-weight:700;color:#fff;font-family:'Outfit',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 2px 8px rgba(5,150,105,.3);-webkit-user-select:none;user-select:none;transition:opacity .15s}
+.dp-btn-start:active{opacity:.8}
+.dp-btn-start:disabled{background:var(--text3);box-shadow:none;cursor:default}
+.add-section-label{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+.new-file-toggle{width:100%;background:var(--bg2);border:1.5px dashed var(--border2);border-radius:14px;padding:13px 16px;font-size:14px;font-weight:500;color:var(--text2);font-family:'Outfit',sans-serif;cursor:pointer;display:flex;align-items:center;gap:8px;-webkit-user-select:none;user-select:none;transition:all .15s}
+.new-file-toggle:active{opacity:.75}
+
+/* File selector A - horizontal scroll cards */
+.file-card-scroll{display:flex;gap:10px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none}
+.file-card-scroll::-webkit-scrollbar{display:none}
+.file-card{flex-shrink:0;width:90px;border:1.5px solid var(--border);border-radius:14px;padding:12px 8px;background:var(--bg);cursor:pointer;text-align:center;transition:all .15s;-webkit-user-select:none;user-select:none;display:flex;flex-direction:column;align-items:center;gap:5px}
+.file-card:active{opacity:.75}
+.file-card.selected{border-width:2px}
+.fc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0}
+.fc-name{font-size:11px;font-weight:600;color:var(--text);line-height:1.3;word-break:break-all}
+.fc-cnt{font-size:10px;color:var(--text3)}
+.fc-add{border-style:dashed;border-color:var(--border2)}
+.fc-add .fc-icon{background:var(--bg3);color:var(--text3)}
+.fc-add .fc-name{color:var(--text3)}
+
+/* Color picker */
+.color-picker{display:flex;gap:10px;padding:4px 0;overflow-x:auto;scrollbar-width:none}
+.color-picker::-webkit-scrollbar{display:none}
+.color-swatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s;-webkit-user-select:none;user-select:none;flex-shrink:0}
+.color-swatch.selected{border-color:var(--text);transform:scale(1.15)}</style>
+</head>
+<body>
+<div id="app">
+<div id="screen">
+
+<!-- ADD -->
+<div id="page-add" class="page active">
+  <div class="ph" style="padding-bottom:10px"><div class="ph-title">追加</div></div>
+
+  <!-- ファイル選択 (案A) -->
+  <div style="padding:0 16px 4px"><span style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">保存先ファイル</span></div>
+  <div class="file-card-scroll" id="file-cards"></div>
+
+  <!-- 単語フォーム -->
+  <div class="form-block">
+    <div class="field"><label>表面（単語・問い）</label><textarea id="inp-front" placeholder="例: ephemeral" rows="2" autocomplete="off" autocorrect="off" autocapitalize="none"></textarea></div>
+    <div class="field"><label>裏面（意味・答え）</label><textarea id="inp-back" placeholder="例: 短命な、儚い" rows="2" autocomplete="off"></textarea></div>
+    <div class="field" style="margin-bottom:0"><label>メモ・例文（任意）</label><textarea id="inp-memo" placeholder="例: an ephemeral joy" rows="2" autocomplete="off"></textarea></div>
+  </div>
+  <div style="padding:0 16px 32px">
+    <button class="btn-full" id="add-word-btn" onclick="addWord()">追加する</button>
+  </div>
+</div>
+
+<!-- WORDS -->
+<div id="page-words" class="page">
+  <div class="ph" style="padding-bottom:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="ph-title">単語帳</div>
+      <button class="words-add-btn" onclick="showPage('add')">追加</button>
+    </div>
+    <!-- sort inline under title -->
+    <div class="sort-bar" id="sort-bar" style="padding:10px 0 0;margin:0"></div>
+  </div>
+  <div id="word-list-grouped"></div>
+</div>
+
+<!-- QUIZ -->
+<div id="page-quiz" class="page">
+  <div class="ph"><div class="ph-title">復習</div><div class="ph-sub" id="quiz-ph-sub"></div></div>
+  <div class="quiz-cal" id="quiz-cal"></div>
+  <div id="quiz-day-panel"></div>
+  <!-- 復習履歴 -->
+  <div style="padding:0 16px 32px" id="review-history-wrap">
+    <div class="section-hd" style="margin-bottom:10px">復習履歴</div>
+    <div id="review-history-list"></div>
+  </div>
+</div>
+
+<!-- REVIEW SESSION -->
+<div id="page-review" class="page">
+  <div class="ph" style="display:flex;align-items:center;gap:12px;padding-bottom:8px">
+    <button onclick="exitReview()" style="background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;padding:7px 14px;font-family:'Outfit',sans-serif;flex-shrink:0">← 戻る</button>
+    <div style="flex:1">
+      <div class="ph-title" id="review-title">復習</div>
+      <div class="ph-sub" id="review-sub"></div>
+    </div>
+  </div>
+  <div id="review-content" class="quiz-wrap"></div>
+</div>
+
+<!-- Stuck words alert sheet -->
+<div class="sheet-overlay" id="sheet-stuck">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">3日間覚えられていない単語があります</div>
+    <div class="sheet-body">
+      <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:12px">
+        以下の単語が<strong>3日以上</strong>当日ステージに残っています：
+      </p>
+      <div style="background:var(--red-dim);border:1px solid rgba(220,38,38,.2);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:14px;color:var(--red);line-height:1.7" id="stuck-words-list"></div>
+      <p style="font-size:13px;color:var(--text3)">削除して新しい単語に集中しますか？それとも継続しますか？</p>
+    </div>
+    <div class="sheet-actions">
+      <button class="s-cancel" onclick="continueStuckWords()">継続する</button>
+      <button class="s-ok" style="background:var(--red)" onclick="deleteStuckWords()"><span id="stuck-count"></span>件を削除</button>
+    </div>
+  </div>
+</div>
+
+<!-- No-calendar warning sheet -->
+<div class="sheet-overlay" id="sheet-nocal" onclick="closeSheet('nocal')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">カレンダーに反映されません</div>
+    <div class="sheet-body">
+      <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:8px">この復習はカレンダーのスケジュールに<strong>反映されません</strong>。</p>
+      <p style="font-size:13px;color:var(--text3);line-height:1.6">単語の定着度に影響せず、純粋に復習の練習として使えます。</p>
+    </div>
+    <div class="sheet-actions">
+      <button class="s-cancel" onclick="closeSheet('nocal')">キャンセル</button>
+      <button class="s-ok" id="nocal-ok-btn">OK・始める</button>
+    </div>
+  </div>
+</div>
+
+<!-- File review sheet -->
+<div class="sheet-overlay" id="sheet-file-review" onclick="closeSheet('file-review')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="file-review-title">復習する</div>
+    <div class="sheet-body">
+      <p style="font-size:13px;color:var(--text3);margin-bottom:20px" id="file-review-meta"></p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="file-mode-btn" id="frb-all" onclick="startFileReview('all')">
+          <span class="fmb-icon">📚</span>
+          <div class="fmb-body"><div class="fmb-title">全単語を復習</div><div class="fmb-sub" id="frb-all-sub"></div></div>
+        </button>
+        <button class="file-mode-btn" id="frb-wrong" onclick="startFileReview('wrong')">
+          <span class="fmb-icon">❌</span>
+          <div class="fmb-body"><div class="fmb-title">間違えた単語だけ</div><div class="fmb-sub" id="frb-wrong-sub"></div></div>
+        </button>
+        <button class="file-mode-btn" id="frb-random" onclick="startFileReview('random')">
+          <span class="fmb-icon">🔀</span>
+          <div class="fmb-body"><div class="fmb-title">ランダム順</div><div class="fmb-sub" id="frb-random-sub"></div></div>
+        </button>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- CURVE -->
+<div id="page-curve" class="page">
+  <div class="ph"><div class="ph-title">分析</div><div class="ph-sub">習慣・定着率データ</div></div>
+
+  <!-- 習慣分析 -->
+  <div class="habit-card" id="habit-card">
+    <div class="habit-streak-row">
+      <div class="habit-streak-main">
+        <div class="habit-streak-num" id="habit-streak-num">0</div>
+        <div class="habit-streak-label">日連続</div>
+      </div>
+      <div class="habit-streak-stats">
+        <div class="habit-stat"><div class="habit-stat-val" id="habit-best">0</div><div class="habit-stat-label">最長記録</div></div>
+        <div class="habit-stat"><div class="habit-stat-val" id="habit-total">0</div><div class="habit-stat-label">累計日数</div></div>
+        <div class="habit-stat"><div class="habit-stat-val" id="habit-words-today">0</div><div class="habit-stat-label">今日の単語</div></div>
+      </div>
+    </div>
+    <div class="habit-week" id="habit-week"></div>
+    <div class="habit-grid-wrap">
+      <div class="habit-grid" id="habit-grid"></div>
+      <div class="habit-grid-label">← 過去90日</div>
+    </div>
+  </div>
+
+  <div class="ret-chart" id="retention-chart">
+    <div class="ret-chart-title">単語ごとの記憶定着率（低い順）</div>
+    <div id="ret-bars" class="ret-bars"></div>
+  </div>
+  <div class="curve-card">
+    <p class="curve-card-title">エビングハウス忘却曲線</p>
+    <svg width="100%" viewBox="0 0 340 130" xmlns="http://www.w3.org/2000/svg" style="display:block">
+      <line x1="30" y1="8" x2="30" y2="110" stroke="rgba(0,0,0,.1)" stroke-width="1"/>
+      <line x1="26" y1="106" x2="334" y2="106" stroke="rgba(0,0,0,.1)" stroke-width="1"/>
+      <text x="28" y="12" font-size="9" fill="#a0a0b0" text-anchor="end" font-family="sans-serif">100%</text>
+      <text x="28" y="55" font-size="9" fill="#a0a0b0" text-anchor="end" font-family="sans-serif">58%</text>
+      <path d="M30,10 C60,10 75,46 100,54 S145,67 185,75 S245,84 300,90 S325,93 334,94" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+      <path d="M30,10 C60,10 75,28 100,32 S145,36 185,39 S245,43 300,47 S325,50 334,52" fill="none" stroke="#059669" stroke-width="2" stroke-dasharray="5,3"/>
+      <circle cx="30" cy="10" r="4" fill="#059669"/><circle cx="100" cy="32" r="4" fill="#059669"/><circle cx="158" cy="37" r="4" fill="#059669"/><circle cx="218" cy="42" r="4" fill="#059669"/><circle cx="290" cy="47" r="4" fill="#059669"/>
+      <line x1="100" y1="10" x2="100" y2="106" stroke="#059669" stroke-width=".7" stroke-dasharray="3,3" opacity=".4"/>
+      <line x1="158" y1="10" x2="158" y2="106" stroke="#059669" stroke-width=".7" stroke-dasharray="3,3" opacity=".4"/>
+      <line x1="218" y1="10" x2="218" y2="106" stroke="#059669" stroke-width=".7" stroke-dasharray="3,3" opacity=".4"/>
+      <line x1="290" y1="10" x2="290" y2="106" stroke="#059669" stroke-width=".7" stroke-dasharray="3,3" opacity=".4"/>
+      <text x="100" y="118" font-size="9" fill="#059669" text-anchor="middle" font-family="sans-serif">1日</text>
+      <text x="158" y="118" font-size="9" fill="#059669" text-anchor="middle" font-family="sans-serif">3日</text>
+      <text x="218" y="118" font-size="9" fill="#059669" text-anchor="middle" font-family="sans-serif">7日</text>
+      <text x="290" y="118" font-size="9" fill="#059669" text-anchor="middle" font-family="sans-serif">14日</text>
+      <rect x="36" y="10" width="10" height="2.5" fill="#dc2626" rx="1"/><text x="50" y="15" font-size="9" fill="#a0a0b0" font-family="sans-serif">復習なし</text>
+      <rect x="110" y="10" width="10" height="2.5" fill="#059669" rx="1"/><text x="124" y="15" font-size="9" fill="#a0a0b0" font-family="sans-serif">復習あり</text>
+    </svg>
+  </div>
+  <div style="height:20px"></div>
+  <div style="padding:0 16px">
+    <button class="btn-ghost" onclick="exportData()">エクスポート</button>
+    <input type="file" id="import-inp" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn-ghost" style="margin-top:10px" onclick="document.getElementById('import-inp').click()">インポート</button>
+  </div>
+  <div style="height:20px"></div>
+</div>
+
+</div>
+
+<div id="tabbar">
+  <button class="tab-btn active" id="tab-add" onclick="showPage('add',this)">追加</button>
+  <button class="tab-btn" id="tab-words" onclick="showPage('words',this)">単語帳</button>
+  <button class="tab-btn" id="tab-quiz" onclick="showPage('quiz',this)">復習<div class="tab-badge" id="badge-quiz"></div></button>
+  <button class="tab-btn" id="tab-curve" onclick="showPage('curve',this)">分析</button>
+</div>
+</div>
+
+<!-- Deck Sheet -->
+<div class="sheet-overlay" id="sheet-deck" onclick="closeSheet('deck')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">新しいファイルを作成</div>
+    <div class="sheet-body">
+      <div class="field"><label>ファイル名</label><input type="text" id="deck-name-inp" placeholder="例: TOEIC対策、営業英語"></div>
+      <div class="field"><label>カテゴリ</label><select id="deck-type-inp"><option value="work">💼 仕事</option><option value="private">🏠 プライベート</option><option value="study">📚 勉強</option><option value="other">📦 その他</option></select></div>
+    </div>
+    <div class="sheet-actions"><button class="s-cancel" onclick="closeSheet('deck')">キャンセル</button><button class="s-ok" onclick="createDeck()">作成</button></div>
+  </div>
+</div>
+
+<!-- Word Detail Sheet -->
+<div class="sheet-overlay" id="sheet-detail" onclick="closeSheet('detail')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" id="detail-body"></div>
+  </div>
+</div>
+
+<!-- New File Sheet -->
+<div class="sheet-overlay" id="sheet-new-file" onclick="closeSheet('new-file')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">新しいファイルを作成</div>
+    <div class="sheet-body">
+      <div class="field"><label>ファイル名</label><input type="text" id="quick-deck-name" placeholder="例: 仕事英語、TOEIC対策" autocomplete="off"></div>
+      <div class="field" style="margin-bottom:0"><label>カラー</label><div class="color-picker" id="new-file-color-picker"></div></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="s-cancel" onclick="closeSheet('new-file')">キャンセル</button>
+      <button class="s-ok" id="new-file-create-btn" onclick="quickCreateDeck()" style="background:var(--green)">作成</button>
+    </div>
+  </div>
+</div>
+
+<!-- Deck Edit Sheet -->
+<div class="sheet-overlay" id="sheet-deck-edit" onclick="closeSheet('deck-edit')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="deck-edit-title">ファイルを編集</div>
+    <div class="sheet-body">
+      <div class="field"><label>ファイル名</label><input type="text" id="deck-edit-name" placeholder="ファイル名"></div>
+      <div class="field">
+        <label>カラー</label>
+        <div class="color-picker" id="color-picker"></div>
+      </div>
+      <button class="del-btn" id="deck-edit-del-btn">このファイルを削除する</button>
+    </div>
+    <div class="sheet-actions"><button class="s-cancel" onclick="closeSheet('deck-edit')">キャンセル</button><button class="s-ok" onclick="saveDeckEdit()">保存</button></div>
+  </div>
+</div>
+
+<!-- Word Edit Sheet -->
+<div class="sheet-overlay" id="sheet-word-edit" onclick="closeSheet('word-edit')">
+  <div class="sheet" onclick="event.stopPropagation()" style="max-height:90vh;overflow-y:auto">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">単語を編集</div>
+    <div class="sheet-body">
+      <div class="field"><label>表面</label><textarea id="word-edit-front" rows="2"></textarea></div>
+      <div class="field"><label>裏面</label><textarea id="word-edit-back" rows="2"></textarea></div>
+      <div class="field"><label>メモ・例文</label><textarea id="word-edit-memo" rows="2"></textarea></div>
+      <div class="field"><label>ファイル</label><select id="word-edit-deck"></select></div>
+      <button class="del-btn" id="word-edit-del-btn">この単語を削除する</button>
+    </div>
+    <div class="sheet-actions"><button class="s-cancel" onclick="closeSheet('word-edit')">キャンセル</button><button class="s-ok" onclick="saveWordEdit()">保存</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DAY=86400000;
+const TYPE_EMOJI={work:'💼',private:'🏠',study:'📚',other:'📦'};
+const SORT_OPTIONS=[{key:'newest',label:'最新順'},{key:'oldest',label:'古い順'},{key:'weak',label:'苦手順'},{key:'mastered',label:'習得順'}];
+
+// ステージ定義: interval日数で分類
+const STAGES=[
+  {key:'s0', label:'当日',  interval:0,  next:1},
+  {key:'s1', label:'1日後', interval:1,  next:3},
+  {key:'s3', label:'3日後', interval:3,  next:7},
+  {key:'s7', label:'7日後', interval:7,  next:14},
+  {key:'s14',label:'14日後',interval:14, next:30},
+];
+
+function getStageForWord(w){
+  // stageはintervalで決まる
+  if(w.interval===0)return 's0';
+  if(w.interval<=1) return 's1';
+  if(w.interval<=3) return 's3';
+  if(w.interval<=7) return 's7';
+  return 's14';
+}
+
+function defState(){return{
+  activeDeck:'work',activeSort:'newest',activeStage:'s0',
+  decks:[
+    {id:'work',name:'仕事用英語',type:'work',color:'#2563eb'},
+    {id:'private',name:'日常英会話',type:'private',color:'#059669'}
+  ],
+  words:[
+    {id:'w1',front:'serendipity',back:'思いがけない幸運',memo:'a serendipity of meeting her',deck:'private',added:Date.now(),nextReview:Date.now(),interval:0,ease:2.5,reviews:0,missStreak:0,totalMiss:0},
+    {id:'w2',front:'leverage',back:'活用する、てこの力',memo:'leverage our strengths',deck:'work',added:Date.now()-DAY,nextReview:Date.now(),interval:1,ease:2.5,reviews:2,missStreak:1,totalMiss:1},
+    {id:'w3',front:'mitigate',back:'軽減する、和らげる',memo:'mitigate the risk',deck:'work',added:Date.now()-3*DAY,nextReview:Date.now(),interval:3,ease:2.5,reviews:3,missStreak:0,totalMiss:0},
+    {id:'w4',front:'ubiquitous',back:'どこにでもある、遍在する',memo:'smartphones are ubiquitous',deck:'private',added:Date.now()-7*DAY,nextReview:Date.now(),interval:7,ease:2.6,reviews:4,missStreak:2,totalMiss:3},
+    {id:'w5',front:'paradigm',back:'典型、パラダイム',memo:'paradigm shift',deck:'work',added:Date.now()-14*DAY,nextReview:Date.now(),interval:14,ease:2.5,reviews:5,missStreak:0,totalMiss:1},
+  ],
+  quizQueue:[],quizIdx:0,quizFlipped:false,repeatQueue:[],
+}}
+
+let S;
+// ── SUPABASE ──
+const SB_URL='https://xzsnxdqwbsfvllmzixgd.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6c254ZHF3YnNmdmxsbXppeGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyMTQ3NjcsImV4cCI6MjA5NTc5MDc2N30.HMFiSUGH1znXR2_ii8TuyQ4fbu8mBhBqcce3fqVu2Pc';
+
+async function syncToCloud(data){
+  try{
+    await fetch(`${SB_URL}/rest/v1/user_data`,{
+      method:'POST',
+      headers:{
+        'apikey':SB_KEY,
+        'Authorization':`Bearer ${SB_KEY}`,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates'
+      },
+      body:JSON.stringify({id:'default',data,updated_at:new Date().toISOString()})
+    });
+  }catch(e){console.log('sync error',e)}
+}
+
+async function loadFromCloud(){
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/user_data?id=eq.default&select=data`,{
+      headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}
+    });
+    const rows=await res.json();
+    if(rows&&rows[0]&&rows[0].data){
+      const cloud=rows[0].data;
+      // merge activityLog (keep local + cloud combined)
+      const localLog=S.activityLog||{};
+      S={...defState(),...cloud};
+      S.activityLog={...localLog,...(cloud.activityLog||{})};
+      S.words.forEach(w=>{
+        if(w.missStreak===undefined)w.missStreak=0;
+        if(w.totalMiss===undefined)w.totalMiss=0;
+        if(!w.stuckSince)w.stuckSince=w.added||Date.now();
+      });
+      localStorage.setItem('mc5',JSON.stringify(S));
+      return true;
+    }
+  }catch(e){console.log('load error',e)}
+  return false;
+}
+
+let syncTimer=null;
+function save(){
+  try{localStorage.setItem('mc5',JSON.stringify(S))}catch(e){}
+  // debounce cloud sync 2秒
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(()=>syncToCloud(S),2000);
+}
+
+try{const r=localStorage.getItem('mc5');S=r?JSON.parse(r):defState();
+  S.words.forEach(w=>{if(w.missStreak===undefined)w.missStreak=0;if(w.totalMiss===undefined)w.totalMiss=0});
+}catch(e){S=defState()}
+function genId(){return'w'+Date.now()+Math.random().toString(36).slice(2,5)}
+function isDue(w){return w.nextReview<=Date.now()}
+function getWords(d){return d==='all'?[...S.words]:S.words.filter(w=>w.deck===d)}
+function ret(w){return Math.max(5,Math.min(100,Math.round(Math.pow(0.5,(Date.now()-w.added)/DAY/Math.max(w.interval,1))*100)))}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function startOfDay(ts){const d=new Date(ts);d.setHours(0,0,0,0);return d.getTime()}
+function isFriday(){return new Date().getDay()===5}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function openSheet(n){document.getElementById('sheet-'+n).classList.add('open')}
+function closeSheet(n){document.getElementById('sheet-'+n).classList.remove('open')}
+
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');b.style.background='';b.style.color=''});
+  document.getElementById('page-'+name).classList.add('active');
+  const tabBtn=btn||document.getElementById('tab-'+name);
+  tabBtn.classList.add('active');
+  document.getElementById('screen').scrollTo(0,0);
+  ({words:renderWords,add:renderAdd,quiz:renderQuizPage,curve:renderCurve})[name]?.();
+  // re-apply accent so active tab color is correct
+  const dk=S.decks.find(d=>d.id===S.activeDeck);
+  applyAccent(fileColor(dk));
+}
+
+function renderChips(containerId,active,setFn,showAdd){
+  const c=document.getElementById(containerId);if(!c)return;
+  let h=`<div class="chip${active==='all'?' active':''}" onclick="${setFn}('all')">📋 すべて</div>`;
+  S.decks.forEach(d=>h+=`<div class="chip${active===d.id?' active':''}" onclick="${setFn}('${d.id}')">${TYPE_EMOJI[d.type]} ${d.name}</div>`);
+  if(showAdd)h+=`<div class="chip add-chip" onclick="openSheet('deck')">＋ ファイル追加</div>`;
+  c.innerHTML=h;
+}
+function setDeckWords(id){S.activeDeck=id;save();renderWords()}
+function setDeckAdd(id){S.activeDeck=id;save();updateDeckSelect()}
+
+function updateBadges(){
+  const due=S.words.filter(isDue).length;
+  const bq=document.getElementById('badge-quiz');
+  bq.textContent=due>9?'9+':due;bq.classList.toggle('show',due>0);
+}
+
+
+// ── QUIZ CALENDAR ──
+let calViewYear=new Date().getFullYear();
+let calViewMonth=new Date().getMonth();
+let calSelectedTs=startOfDay(Date.now());
+let calView=S.calView||'week'; // デフォルトを1週間に
+let calRangeStart=startOfDay(Date.now());
+
+const STAGE_LABELS={'s0':'当日','s1':'1日','s3':'3日','s7':'7日','s14':'14日'};
+const CAL_VIEWS=[{key:'3day',label:'3日'},{key:'week',label:'1週'},{key:'2week',label:'2週'},{key:'month',label:'1ヶ月'}];
+const DNAMES=['日','月','火','水','木','金','土'];
+
+function calStageText(ts){
+  const ws=S.words.filter(w=>startOfDay(w.nextReview)===ts);
+  if(!ws.length)return'';
+  const sc={};ws.forEach(w=>{const s=getStageForWord(w);sc[s]=(sc[s]||0)+1});
+  // show top 2 stages as small text
+  return Object.entries(sc).slice(0,2).map(([s,n])=>`<span class="qcal-stage-tag">${STAGE_LABELS[s]||s}${n>1?'×'+n:''}</span>`).join('');
+}
+
+function calCellClasses(ts,today,base){
+  let c=base;
+  if(ts===today){
+    c+=' today';
+    // 今日期限で残っている単語が1件以上あれば赤
+    const overdueToday=S.words.filter(w=>startOfDay(w.nextReview)<=today&&w.interval===0).length;
+    if(overdueToday>0)c+=' overdue-today';
+  } else if(ts===calSelectedTs)c+=' selected';
+  else if(ts<today)c+=' past';
+  const cnt=S.words.filter(w=>startOfDay(w.nextReview)===ts).length;
+  if(cnt>0&&ts!==today)c+=' has-due';
+  return c;
+}
+
+// 3日以上当日ステージに残っている単語をチェック
+function checkStuckWords(){
+  const today=startOfDay(Date.now());
+  // interval===0 かつ stuckSince が3日以上前
+  const stuck=S.words.filter(w=>{
+    if(w.interval!==0)return false;
+    if(!w.stuckSince)return false;
+    const days=Math.floor((today-startOfDay(w.stuckSince))/DAY);
+    return days>=3;
+  });
+  if(!stuck.length)return;
+  const names=stuck.slice(0,5).map(w=>`「${w.front}」`).join('、');
+  const more=stuck.length>5?` ほか${stuck.length-5}件`:'';
+  // show alert sheet
+  document.getElementById('stuck-words-list').textContent=names+more;
+  document.getElementById('stuck-count').textContent=stuck.length;
+  openSheet('stuck');
+}
+
+function deleteStuckWords(){
+  const today=startOfDay(Date.now());
+  S.words=S.words.filter(w=>{
+    if(w.interval!==0)return true;
+    if(!w.stuckSince)return true;
+    const days=Math.floor((today-startOfDay(w.stuckSince))/DAY);
+    return days<3;
+  });
+  closeSheet('stuck');save();renderWords();renderQuizCal();renderDayPanel();
+  toast('削除しました');
+}
+
+function continueStuckWords(){
+  // reset stuckSince so they get another 3 days
+  const today=startOfDay(Date.now());
+  S.words.forEach(w=>{
+    if(w.interval===0&&w.stuckSince){
+      const days=Math.floor((today-startOfDay(w.stuckSince))/DAY);
+      if(days>=3)w.stuckSince=Date.now();
+    }
+  });
+  closeSheet('stuck');save();toast('継続します');
+}
+
+function renderQuizCal(){
+  const el=document.getElementById('quiz-cal');if(!el)return;
+  const today=startOfDay(Date.now());
+
+  const toggleHTML=`<div class="qcal-view-toggle">${CAL_VIEWS.map(v=>`<button class="qcal-vbtn${calView===v.key?' active':''}" onclick="setCalView('${v.key}')">${v.label}</button>`).join('')}</div>`;
+
+  let gridHTML='',headerLabel='';
+
+  if(calView==='3day'){
+    const days=[];for(let i=0;i<3;i++)days.push(calRangeStart+i*DAY);
+    headerLabel=`${new Date(days[0]).getMonth()+1}/${new Date(days[0]).getDate()} 〜 ${new Date(days[2]).getMonth()+1}/${new Date(days[2]).getDate()}`;
+    gridHTML=`<div class="qcal-grid-3">`;
+    days.forEach(ts=>{
+      const d=new Date(ts);const cnt=S.words.filter(w=>startOfDay(w.nextReview)===ts).length;
+      gridHTML+=`<div class="${calCellClasses(ts,today,'qcal-cell-3')}" onclick="selectCalDay(${ts})">
+        <span class="qcal-3-dow">${DNAMES[d.getDay()]}</span>
+        <span class="qcal-3-num">${d.getDate()}</span>
+        <span class="qcal-3-cnt${cnt===0?' zero':''}">${cnt>0?cnt+'件':'－'}</span>
+        <div class="qcal-stage-row">${calStageText(ts)}</div>
+      </div>`;
+    });
+    gridHTML+=`</div>`;
+
+  } else if(calView==='week'||calView==='2week'){
+    const days=calView==='week'?7:14;
+    const d0=new Date(calRangeStart);const dow=d0.getDay();const monOff=dow===0?6:dow-1;
+    const weekStart=startOfDay(calRangeStart-monOff*DAY);
+    const firstM=new Date(weekStart);const lastM=new Date(weekStart+(days-1)*DAY);
+    headerLabel=`${firstM.getMonth()+1}/${firstM.getDate()} 〜 ${lastM.getMonth()+1}/${lastM.getDate()}`;
+    gridHTML=`<div class="qcal-dow">${DNAMES.map((n,i)=>`<div class="qcal-dow-cell" style="${i===0?'color:#dc2626':i===6?'color:#2563eb':''}">${n}</div>`).join('')}</div>`;
+    gridHTML+=`<div class="qcal-grid-7">`;
+    for(let i=0;i<days;i++){
+      const ts=weekStart+i*DAY;const d=new Date(ts);
+      const cnt=S.words.filter(w=>startOfDay(w.nextReview)===ts).length;
+      gridHTML+=`<div class="${calCellClasses(ts,today,'qcal-cell-7')}" onclick="selectCalDay(${ts})">
+        <span class="qcal-7-dow">${DNAMES[d.getDay()]}</span>
+        <span class="qcal-7-num">${d.getDate()}</span>
+        <span class="qcal-7-cnt${cnt===0?' zero':''}">${cnt>0?cnt:''}</span>
+      </div>`;
+    }
+    gridHTML+=`</div>`;
+
+  } else {
+    headerLabel=`${calViewYear}年${calViewMonth+1}月`;
+    const firstDay=new Date(calViewYear,calViewMonth,1);
+    const lastDay=new Date(calViewYear,calViewMonth+1,0);
+    const startDow=firstDay.getDay();
+    const totalCells=Math.ceil((startDow+lastDay.getDate())/7)*7;
+    gridHTML=`<div class="qcal-dow">${DNAMES.map((n,i)=>`<div class="qcal-dow-cell" style="${i===0?'color:#dc2626':i===6?'color:#2563eb':''}">${n}</div>`).join('')}</div>`;
+    gridHTML+=`<div class="qcal-grid">`;
+    for(let i=0;i<totalCells;i++){
+      const dayNum=i-startDow+1;
+      if(dayNum<1||dayNum>lastDay.getDate()){gridHTML+=`<div class="qcal-cell empty"></div>`;continue;}
+      const ts=startOfDay(new Date(calViewYear,calViewMonth,dayNum).getTime());
+      const cnt=S.words.filter(w=>startOfDay(w.nextReview)===ts).length;
+      gridHTML+=`<div class="${calCellClasses(ts,today,'qcal-cell')}" onclick="selectCalDay(${ts})">
+        <span class="qcal-num">${dayNum}</span>
+        ${cnt>0?`<span class="qcal-cell-cnt">${cnt}</span>`:'<div style="height:8px"></div>'}
+      </div>`;
+    }
+    gridHTML+=`</div>`;
+  }
+
+  el.innerHTML=`<div class="qcal-header">
+    <span class="qcal-month">${headerLabel}</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      ${toggleHTML}
+      <div class="qcal-nav">
+        <div class="qcal-nav-btn" onclick="calPrev()" title="前へ">◀</div>
+        <div class="qcal-nav-btn qcal-today-btn" onclick="goToday()" title="今日">今日</div>
+        <div class="qcal-nav-btn" onclick="calNext()" title="次へ">▶</div>
+      </div>
+    </div>
+  </div>${gridHTML}`;
+}
+
+function setCalView(v){calView=v;S.calView=v;save();renderQuizCal()}
+
+function goToday(){
+  const now=new Date();
+  calViewYear=now.getFullYear();calViewMonth=now.getMonth();
+  calRangeStart=startOfDay(Date.now());
+  calSelectedTs=startOfDay(Date.now());
+  renderQuizCal();renderDayPanel();
+}
+
+function calPrev(){
+  if(calView==='3day'){calRangeStart-=3*DAY;}
+  else if(calView==='week'){calRangeStart-=7*DAY;}
+  else if(calView==='2week'){calRangeStart-=14*DAY;}
+  else{calViewMonth--;if(calViewMonth<0){calViewMonth=11;calViewYear--}}
+  renderQuizCal();
+}
+function calNext(){
+  if(calView==='3day'){calRangeStart+=3*DAY;}
+  else if(calView==='week'){calRangeStart+=7*DAY;}
+  else if(calView==='2week'){calRangeStart+=14*DAY;}
+  else{calViewMonth++;if(calViewMonth>11){calViewMonth=0;calViewYear++}}
+  renderQuizCal();
+}
+
+// ── FILE COLORS ──
+const FILE_COLORS=[
+  {hex:'#059669'},{hex:'#10b981'},{hex:'#34d399'},{hex:'#6ee7b7'},
+  {hex:'#2563eb'},{hex:'#3b82f6'},{hex:'#60a5fa'},{hex:'#93c5fd'},
+  {hex:'#7c3aed'},{hex:'#8b5cf6'},{hex:'#a78bfa'},{hex:'#c4b5fd'},
+  {hex:'#d97706'},{hex:'#f59e0b'},{hex:'#fbbf24'},{hex:'#fcd34d'},
+  {hex:'#dc2626'},{hex:'#ef4444'},{hex:'#f87171'},{hex:'#fca5a5'},
+  {hex:'#db2777'},{hex:'#0891b2'},{hex:'#475569'},{hex:'#1f2937'},
+];
+const DEFAULT_COLOR='#059669';
+function fileColor(dk){return dk&&dk.color?dk.color:DEFAULT_COLOR}
+function applyAccent(color){
+  if(!color)color=DEFAULT_COLOR;
+  const r=parseInt(color.slice(1,3),16),g=parseInt(color.slice(3,5),16),b=parseInt(color.slice(5,7),16);
+  const dim=`rgba(${r},${g},${b},.15)`;
+  const shadow=`0 2px 8px rgba(${r},${g},${b},.3)`;
+  const root=document.documentElement;
+  root.style.setProperty('--green',color);
+  root.style.setProperty('--green-dim',dim);
+  root.style.setProperty('--green-dark',color);
+  root.style.setProperty('--green-light',dim);
+  // update all accent-colored elements
+  document.querySelectorAll('.btn-full').forEach(b=>{b.style.background=color;b.style.boxShadow=shadow});
+  document.querySelectorAll('.dp-btn-start').forEach(b=>{b.style.background=color;b.style.boxShadow=shadow});
+  document.querySelectorAll('.words-add-btn').forEach(b=>b.style.background=color);
+  document.querySelectorAll('.s-ok').forEach(b=>b.style.background=color);
+  document.querySelectorAll('.tab-btn.active').forEach(b=>{b.style.background=color;b.style.color='#fff'});
+}
+
+// ── FILE SELECTOR A ──
+let newFileColor=DEFAULT_COLOR;
+
+function renderFileSelector(){
+  const el=document.getElementById('file-cards');if(!el)return;
+  let h='';
+  S.decks.forEach(d=>{
+    const color=fileColor(d);
+    const cnt=S.words.filter(w=>w.deck===d.id).length;
+    const sel=S.activeDeck===d.id;
+    h+=`<div class="file-card${sel?' selected':''}" style="${sel?'border-color:'+color+';background:'+color+'18':''}" onclick="selectFile('${d.id}')">
+      <div class="fc-icon" style="background:${color}"><i class="ti ti-folder" aria-hidden="true"></i></div>
+      <div class="fc-name" style="${sel?'color:'+color:''}">${esc(d.name)}</div>
+      <div class="fc-cnt">${cnt}件</div>
+    </div>`;
+  });
+  h+=`<div class="file-card fc-add" onclick="openNewFileSheet()">
+    <div class="fc-icon"><i class="ti ti-plus" aria-hidden="true"></i></div>
+    <div class="fc-name">新規作成</div>
+  </div>`;
+  el.innerHTML=h;
+  // scroll selected card into view
+  setTimeout(()=>{
+    const sel=el.querySelector('.file-card.selected');
+    if(sel)sel.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  },50);
+}
+
+function selectFile(id){
+  S.activeDeck=id;save();
+  applyAccent(fileColor(S.decks.find(d=>d.id===id)));
+  renderFileSelector();
+}
+
+function openNewFileSheet(){
+  newFileColor=DEFAULT_COLOR;
+  document.getElementById('quick-deck-name').value='';
+  renderNewFileColorPicker();
+  openSheet('new-file');
+}
+
+function renderNewFileColorPicker(){
+  const cp=document.getElementById('new-file-color-picker');if(!cp)return;
+  cp.innerHTML=FILE_COLORS.map(c=>`<div class="color-swatch${newFileColor===c.hex?' selected':''}" style="background:${c.hex}" onclick="selectNewFileColor('${c.hex}')"></div>`).join('');
+  const btn=document.getElementById('new-file-create-btn');
+  if(btn)btn.style.background=newFileColor;
+}
+
+function selectNewFileColor(hex){
+  newFileColor=hex;renderNewFileColorPicker();
+}
+
+function updateDeckSelect(){
+  const sel=document.getElementById('sel-deck');if(!sel)return;
+  sel.innerHTML=S.decks.map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
+  if(S.decks.find(d=>d.id===S.activeDeck))sel.value=S.activeDeck;
+}
+
+function addWord(){
+  const front=document.getElementById('inp-front').value.trim();
+  const back=document.getElementById('inp-back').value.trim();
+  const memo=document.getElementById('inp-memo').value.trim();
+  const deck=S.activeDeck;
+  if(!front||!back){toast('単語と意味を入力してください');return}
+  if(!deck||!S.decks.find(d=>d.id===deck)){toast('保存先ファイルを選んでください');return}
+  S.words.push({id:genId(),front,back,memo,deck,added:Date.now(),nextReview:Date.now(),interval:0,ease:2.5,reviews:0,missStreak:0,totalMiss:0,stuckSince:Date.now()});
+  ['inp-front','inp-back','inp-memo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inp-front').focus();
+  save();updateBadges();toast('追加しました ✓');
+}
+
+function quickCreateDeck(){
+  const name=document.getElementById('quick-deck-name').value.trim();
+  if(!name){document.getElementById('quick-deck-name').focus();toast('ファイル名を入力してください');return}
+  const id='d'+Date.now();
+  S.decks.push({id,name,type:'other',color:newFileColor});
+  S.activeDeck=id;
+  closeSheet('new-file');save();applyAccent(newFileColor);renderFileSelector();renderWords();
+  toast(`「${name}」を作成しました ✓`);
+}
+
+// ── ADD ──
+function renderAdd(){
+  renderFileSelector();
+  applyAccent(fileColor(S.decks.find(d=>d.id===S.activeDeck)));
+}
+
+
+let collapsedDecks=new Set(); // deck ids that are collapsed
+
+function renderWords(){
+  const sb=document.getElementById('sort-bar');
+  sb.innerHTML=SORT_OPTIONS.map(o=>`<div class="sort-chip${S.activeSort===o.key?' active':''}" onclick="setSort('${o.key}')">${o.label}</div>`).join('');
+
+  const container=document.getElementById('word-list-grouped');
+  if(!container)return;
+
+  let allWords=[...S.words];
+  if(S.activeSort==='newest')allWords.sort((a,b)=>b.added-a.added);
+  else if(S.activeSort==='oldest')allWords.sort((a,b)=>a.added-b.added);
+  else if(S.activeSort==='weak')allWords.sort((a,b)=>ret(a)-ret(b));
+  else if(S.activeSort==='mastered')allWords.sort((a,b)=>b.interval-a.interval);
+
+  if(!allWords.length){
+    container.innerHTML=`<div class="empty" style="padding:48px 20px"><i class="ti ti-books"></i><p>単語がまだありません</p></div>`;
+    return;
+  }
+
+  let html='';
+  S.decks.forEach(dk=>{
+    const dw=allWords.filter(w=>w.deck===dk.id);
+    if(!dw.length)return;
+    const isCollapsed=collapsedDecks.has(dk.id);
+    const due=dw.filter(isDue).length;
+    const color=fileColor(dk);
+    html+=`<div class="deck-group">
+      <div class="deck-group-header${isCollapsed?' collapsed':''}" onclick="toggleDeckGroup('${dk.id}')">
+        <div class="dgh-color" style="background:${color}"></div>
+        <span class="dgh-name">${esc(dk.name)}</span>
+        <span class="dgh-meta">${dw.length}件${due>0?' · 復習'+due:''}</span>
+        <button class="file-review-btn" onclick="event.stopPropagation();openFileReview('${dk.id}')" style="background:${color}">復習</button>
+        <button class="dgh-edit-btn" onclick="event.stopPropagation();openDeckEdit('${dk.id}')">編集</button>
+        <span class="dgh-chevron${isCollapsed?'':' open'}">▼</span>
+      </div>
+      ${isCollapsed?'':
+        `<div class="deck-group-body">${dw.map(w=>swipeWordRowHTML(w)).join('')}</div>`
+      }
+    </div>`;
+  });
+
+  // uncategorized
+  const deckIds=new Set(S.decks.map(d=>d.id));
+  const uncatWords=allWords.filter(w=>!deckIds.has(w.deck));
+  if(uncatWords.length){
+    html+=`<div class="deck-group">
+      <div class="deck-group-header">
+        <div class="dgh-left"><i class="ti ti-folder dgh-icon"></i><div><div class="dgh-name">未分類</div><div class="dgh-meta">${uncatWords.length}単語</div></div></div>
+      </div>
+      <div class="deck-group-body">${uncatWords.map(w=>swipeWordRowHTML(w)).join('')}</div>
+    </div>`;
+  }
+
+  container.innerHTML=html;
+  // attach swipe handlers after render
+  container.querySelectorAll('.swipe-wrap').forEach(el=>attachSwipe(el));
+}
+
+function toggleDeckGroup(id){
+  if(collapsedDecks.has(id))collapsedDecks.delete(id);
+  else collapsedDecks.add(id);
+  renderWords();
+}
+
+function swipeWordRowHTML(w){
+  const due=isDue(w);const days=Math.round((w.nextReview-Date.now())/DAY);
+  let b='';
+  if(w.reviews===0)b=`<span class="badge b-new">新規</span>`;
+  else if(due)b=`<span class="badge b-due">復習！</span>`;
+  else if(days<=1)b=`<span class="badge b-soon">明日</span>`;
+  else if(days>60)b=`<span class="badge b-master">習得</span>`;
+  else b=`<span class="badge b-ok">${days}日後</span>`;
+  const missHTML=w.totalMiss>0?`<div class="wr-miss" title="ミス${w.totalMiss}回"></div>`:'';
+  return`<div class="swipe-wrap" data-wid="${w.id}">
+    <div class="swipe-inner">
+      <div class="word-row" onclick="openWordEdit('${w.id}')">
+        <div class="wr-body">
+          <div class="wr-front">${esc(w.front)}</div>
+          <div class="wr-back">${esc(w.back)}</div>
+        </div>
+        <div class="wr-right">${missHTML}${b}</div>
+      </div>
+      <div class="swipe-actions">
+        <button class="swipe-edit-btn" onclick="openWordEdit('${w.id}')"><i class="ti ti-edit" style="font-size:18px"></i>編集</button>
+        <button class="swipe-del-btn" onclick="deleteWord('${w.id}')"><i class="ti ti-trash" style="font-size:18px"></i>削除</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function attachSwipe(el){
+  const inner=el.querySelector('.swipe-inner');
+  const actionW=140; // edit+del buttons width
+  let startX=0,startY=0,isDragging=false,isOpen=false;
+  inner.addEventListener('touchstart',e=>{
+    startX=e.touches[0].clientX;startY=e.touches[0].clientY;isDragging=false;
+  },{passive:true});
+  inner.addEventListener('touchmove',e=>{
+    const dx=e.touches[0].clientX-startX;
+    const dy=e.touches[0].clientY-startY;
+    if(!isDragging&&Math.abs(dy)>Math.abs(dx))return;
+    isDragging=true;
+    const target=isOpen?dx-actionW:dx;
+    if(target<0)inner.style.transform=`translateX(${Math.max(target,-actionW)}px)`;
+  },{passive:true});
+  inner.addEventListener('touchend',e=>{
+    if(!isDragging)return;
+    const dx=e.changedTouches[0].clientX-startX;
+    if(dx<-40){inner.style.transform=`translateX(-${actionW}px)`;isOpen=true;}
+    else{inner.style.transform='translateX(0)';isOpen=false;}
+  });
+  // tap elsewhere closes
+  document.addEventListener('touchstart',e=>{
+    if(isOpen&&!el.contains(e.target)){inner.style.transform='translateX(0)';isOpen=false;}
+  },{passive:true});
+}
+
+function setSort(key){S.activeSort=key;save();renderWords()}
+
+// ── Word Edit ──
+let editingWordId=null;
+function openWordEdit(id){
+  editingWordId=id;
+  const w=S.words.find(x=>x.id===id);if(!w)return;
+  document.getElementById('word-edit-front').value=w.front;
+  document.getElementById('word-edit-back').value=w.back;
+  document.getElementById('word-edit-memo').value=w.memo||'';
+  const sel=document.getElementById('word-edit-deck');
+  sel.innerHTML=S.decks.map(d=>`<option value="${d.id}">${TYPE_EMOJI[d.type]} ${d.name}</option>`).join('');
+  sel.value=w.deck;
+  document.getElementById('word-edit-del-btn').onclick=()=>deleteWord(id);
+  openSheet('word-edit');
+}
+function saveWordEdit(){
+  const w=S.words.find(x=>x.id===editingWordId);if(!w)return;
+  const front=document.getElementById('word-edit-front').value.trim();
+  const back=document.getElementById('word-edit-back').value.trim();
+  if(!front||!back){toast('単語と意味を入力してください');return}
+  w.front=front;w.back=back;
+  w.memo=document.getElementById('word-edit-memo').value.trim();
+  w.deck=document.getElementById('word-edit-deck').value;
+  closeSheet('word-edit');save();renderWords();toast('保存しました ✓');
+}
+function deleteWord(id){
+  if(!confirm('この単語を削除しますか？'))return;
+  S.words=S.words.filter(w=>w.id!==id);
+  closeSheet('word-edit');closeSheet('detail');save();renderWords();updateBadges();toast('削除しました');
+}
+
+let editingDeckId=null,editingDeckColor=DEFAULT_COLOR;
+function openDeckEdit(id){
+  editingDeckId=id;
+  const dk=S.decks.find(d=>d.id===id);if(!dk)return;
+  document.getElementById('deck-edit-name').value=dk.name;
+  editingDeckColor=fileColor(dk);
+  // render color swatches
+  const cp=document.getElementById('color-picker');
+  if(cp)cp.innerHTML=FILE_COLORS.map(c=>`<div class="color-swatch${editingDeckColor===c.hex?' selected':''}" style="background:${c.hex}" onclick="pickEditColor('${c.hex}')"></div>`).join('');
+  document.getElementById('deck-edit-del-btn').onclick=()=>deleteDeck(id);
+  openSheet('deck-edit');
+}
+function pickEditColor(hex){
+  editingDeckColor=hex;
+  document.querySelectorAll('#color-picker .color-swatch').forEach(sw=>{
+    sw.classList.toggle('selected',sw.style.background===hex);
+  });
+}
+function saveDeckEdit(){
+  const dk=S.decks.find(d=>d.id===editingDeckId);if(!dk)return;
+  const name=document.getElementById('deck-edit-name').value.trim();
+  if(!name){document.getElementById('deck-edit-name').focus();return}
+  dk.name=name;dk.color=editingDeckColor;
+  closeSheet('deck-edit');save();
+  renderWords();renderFileSelector();
+  if(S.activeDeck===editingDeckId)applyAccent(editingDeckColor);
+  toast('保存しました ✓');
+}
+function deleteDeck(id){
+  if(!confirm('このファイルを削除しますか？\n（単語は削除されません）'))return;
+  S.decks=S.decks.filter(d=>d.id!==id);
+  // move words to uncategorized (keep deck id as-is, just deck entry removed)
+  closeSheet('deck-edit');save();renderWords();updateDeckSelect();toast('ファイルを削除しました');
+}
+
+function openDetail(id){openWordEdit(id)}
+
+function createDeck(){
+  const name=document.getElementById('deck-name-inp').value.trim();
+  const type=document.getElementById('deck-type-inp').value;
+  if(!name){document.getElementById('deck-name-inp').focus();return}
+  S.decks.push({id:'d'+Date.now(),name,type});
+  document.getElementById('deck-name-inp').value='';
+  closeSheet('deck');save();
+  
+  updateDeckSelect();renderWords();toast('ファイルを作成しました');
+}
+
+// ── QUIZ ──
+function renderQuizPage(){
+  calViewYear=new Date().getFullYear();calViewMonth=new Date().getMonth();
+  calSelectedTs=startOfDay(Date.now());calRangeStart=startOfDay(Date.now());
+  selectedDecks=new Set();
+  renderDayPanel();renderQuizCal();renderHistory();
+  const todayCnt=S.words.filter(w=>startOfDay(w.nextReview)===startOfDay(Date.now())).length;
+  const sub=document.getElementById('quiz-ph-sub');
+  if(sub)sub.textContent=todayCnt>0?`今日の復習 ${todayCnt}件`:'今日の復習はありません';
+}
+
+function selectCalDay(ts){
+  calSelectedTs=ts;
+  const d=new Date(ts);calViewYear=d.getFullYear();calViewMonth=d.getMonth();
+  renderQuizCal();
+  renderDayPanel();
+}
+
+// ── Day Panel (above calendar) ──
+let selectedDecks=new Set(); // deck ids selected for quiz
+
+function renderDayPanel(){
+  const el=document.getElementById('quiz-day-panel');if(!el)return;
+  const ts=calSelectedTs;
+  const today=startOfDay(Date.now());
+  const selDate=new Date(ts);
+  const DNAMES=['日','月','火','水','木','金','土'];
+  const isToday=ts===today;
+  const label=isToday?`今日（${selDate.getMonth()+1}/${selDate.getDate()} ${DNAMES[selDate.getDay()]}）`:`${selDate.getMonth()+1}月${selDate.getDate()}日（${DNAMES[selDate.getDay()]}）`;
+
+  const words=S.words.filter(w=>startOfDay(w.nextReview)===ts);
+  if(!words.length){
+    el.innerHTML=`<div class="day-panel"><div class="day-panel-header"><div><div class="day-panel-label">${label}</div><div class="day-panel-meta">復習はありません</div></div></div></div>`;
+    return;
+  }
+
+  // group by deck
+  const deckMap={};
+  words.forEach(w=>{if(!deckMap[w.deck])deckMap[w.deck]=[];deckMap[w.deck].push(w)});
+  const deckIds=Object.keys(deckMap);
+
+  // init selection: all selected
+  if(selectedDecks.size===0||![...selectedDecks].some(id=>deckIds.includes(id))){
+    selectedDecks=new Set(deckIds);
+  }
+
+  const totalSelected=words.filter(w=>selectedDecks.has(w.deck)).length;
+  const allChecked=deckIds.every(id=>selectedDecks.has(id));
+  const etaMin=totalSelected>0?Math.ceil(totalSelected*0.5):0;
+
+  let rowsHTML='';
+  deckIds.forEach(did=>{
+    const dw=deckMap[did];
+    const dk=S.decks.find(d=>d.id===did);
+    const em=dk?TYPE_EMOJI[dk.type]:'📦';
+    const nm=dk?esc(dk.name):'不明';
+    const chips=dw.slice(0,3).map(w=>`<span class="dp-chip">${esc(w.front)}</span>`).join('');
+    const more=dw.length>3?`<span class="dp-chip">+${dw.length-3}</span>`:'';
+    const isChecked=selectedDecks.has(did);
+    rowsHTML+=`<div class="dp-deck-row${isChecked?' selected':''}" onclick="toggleDeckSel('${did}')">
+      <span class="dp-em">${em}</span>
+      <div class="dp-body">
+        <div class="dp-name">${nm}</div>
+        <div class="dp-chips">${chips}${more}</div>
+      </div>
+      <div class="dp-right">
+        <span class="dp-cnt">${dw.length}件</span>
+        <div class="dp-check${isChecked?' checked':''}"></div>
+      </div>
+    </div>`;
+  });
+
+  // friday test row
+  if(isFriday()){
+    const dow=new Date().getDay();const monOff=dow===0?6:dow-1;
+    const mon=startOfDay(Date.now()-monOff*DAY);const fri=mon+5*DAY;
+    const ww=S.words.filter(w=>w.added>=mon&&w.added<fri);
+    if(ww.length>0){
+      rowsHTML+=`<div class="dp-deck-row" style="background:var(--violet-dim)" onclick="startFridayTest()">
+        <span class="dp-em">🏆</span>
+        <div class="dp-body"><div class="dp-name" style="color:var(--violet)">週次テスト（今週 ${ww.length}単語）</div></div>
+        <div class="dp-right"><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div>
+      </div>`;
+    }
+  }
+
+  el.innerHTML=`<div class="day-panel">
+    <div class="day-panel-header">
+      <div>
+        <div class="day-panel-label">${label}</div>
+        <div class="day-panel-meta">${words.length}件 · 約${Math.ceil(words.length*0.5)}分</div>
+      </div>
+    </div>
+    <div class="day-panel-decks">${rowsHTML}</div>
+    <div class="day-panel-actions">
+      <button class="dp-btn-all" onclick="toggleAllDecks()">${allChecked?'すべて解除':'すべて選択'}</button>
+      <button class="dp-btn-start" onclick="startSelectedQuiz()" ${totalSelected===0?'disabled':''}>
+        スタート（${totalSelected}件 · 約${etaMin}分）
+      </button>
+    </div>
+  </div>`;
+}
+
+function toggleDeckSel(id){
+  if(selectedDecks.has(id))selectedDecks.delete(id);
+  else selectedDecks.add(id);
+  renderDayPanel();
+}
+
+function toggleAllDecks(){
+  const ts=calSelectedTs;
+  const words=S.words.filter(w=>startOfDay(w.nextReview)===ts);
+  const deckIds=[...new Set(words.map(w=>w.deck))];
+  const allChecked=deckIds.every(id=>selectedDecks.has(id));
+  if(allChecked)selectedDecks=new Set();
+  else selectedDecks=new Set(deckIds);
+  renderDayPanel();
+}
+
+function startSelectedQuiz(){
+  const ts=calSelectedTs;
+  const words=S.words.filter(w=>startOfDay(w.nextReview)===ts&&selectedDecks.has(w.deck));
+  if(!words.length){toast('単語を選択してください');return}
+  const selDate=new Date(ts);const today=startOfDay(Date.now());
+  const label=ts===today?'今日の復習':`${selDate.getMonth()+1}/${selDate.getDate()}の復習`;
+  launchReview(words,label);
+}
+
+function startFridayTest(){
+  const dow=new Date().getDay();const monOff=dow===0?6:dow-1;
+  const mon=startOfDay(Date.now()-monOff*DAY);const fri=mon+5*DAY;
+  const words=S.words.filter(w=>w.added>=mon&&w.added<fri);
+  if(!words.length){toast('今週追加した単語がありません');return}
+  launchReview(words,'週次テスト');
+}
+
+function launchReview(words,label){
+  const color=fileColor(S.decks.find(d=>d.id===S.activeDeck));
+  S.quizQueue=words.map(w=>w.id).sort(()=>Math.random()-.5);
+  S.quizIdx=0;S.quizFlipped=false;S._nocal=false;S._sessionMissed=[];save();
+  addHistory(label,words.map(w=>w.id),color);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');b.style.background='';b.style.color=''});
+  document.getElementById('page-review').classList.add('active');
+  document.getElementById('review-title').textContent=label;
+  document.getElementById('review-sub').textContent=`${words.length}件 · 約${Math.ceil(words.length*0.5)}分`;
+  document.getElementById('screen').scrollTo(0,0);
+  renderReviewContent();
+}
+
+function exitReview(){
+  S.quizQueue=[];S.quizIdx=0;S.quizFlipped=false;S._nocal=false;S._sessionMissed=[];
+  showPage('quiz',document.getElementById('tab-quiz'));
+}
+
+function renderReviewContent(){
+  const c=document.getElementById('review-content');
+  if(!S.quizQueue.length||S.quizIdx>=S.quizQueue.length){
+    // collect missed words from this session
+    const missedIds=S._sessionMissed||[];
+    const missedWords=S.words.filter(w=>missedIds.includes(w.id));
+    const missedHTML=missedWords.length?`
+      <button class="btn-full" style="max-width:280px;margin:10px auto 0;background:var(--amber)" onclick="retryMissed()">
+        間違えた${missedWords.length}件をもう一度
+      </button>`:'';
+    c.innerHTML=`<div class="quiz-done">
+      <div class="qd-title">復習完了！ 🎉</div>
+      <div class="qd-sub">${S._sessionMissed?.length?`${S._sessionMissed.length}件間違えました`:'全問正解！'}</div>
+      ${missedHTML}
+      <button class="btn-full" style="max-width:280px;margin:10px auto 0;background:var(--bg2);color:var(--text2);border:1.5px solid var(--border);box-shadow:none" onclick="exitReview()">
+        カレンダーへ戻る
+      </button>
+    </div>`;
+    updateBadges();renderQuizCal();renderHistory();
+    return;
+  }
+  const wid=S.quizQueue[S.quizIdx];
+  const w=S.words.find(x=>x.id===wid);
+  if(!w){S.quizIdx++;renderReviewContent();return}
+  const dk=S.decks.find(d=>d.id===w.deck);
+  const color=fileColor(dk);
+  const pct=Math.round(S.quizIdx/S.quizQueue.length*100);
+  const sub=document.getElementById('review-sub');
+  if(sub)sub.textContent=`${S.quizIdx+1} / ${S.quizQueue.length}`;
+  if(!S.quizFlipped){
+    c.innerHTML=`
+      <div class="q-progress"><div class="q-prog-bar"><div class="q-prog-fill" style="width:${pct}%;background:${color}"></div></div><span class="q-prog-txt">${S.quizIdx+1}/${S.quizQueue.length}</span></div>
+      <div class="flip-card" onclick="flipCard()" style="border-top:3px solid ${color}">
+        <div class="fc-deck" style="color:${color}">${dk?esc(dk.name):''}</div>
+        <div class="fc-word">${esc(w.front)}</div>
+        ${w.missStreak>=2?`<div class="fc-miss">✕ ${w.missStreak}回連続ミス</div>`:''}
+        <div class="fc-hint">タップして答えを確認</div>
+      </div>`;
+  } else {
+    c.innerHTML=`
+      <div class="q-progress"><div class="q-prog-bar"><div class="q-prog-fill" style="width:${pct}%;background:${color}"></div></div><span class="q-prog-txt">${S.quizIdx+1}/${S.quizQueue.length}</span></div>
+      <div class="flip-card revealed" style="border-top:3px solid ${color}">
+        <div class="fc-deck" style="color:${color}">${dk?esc(dk.name):''}</div>
+        <div class="fc-word">${esc(w.front)}</div>
+        <div class="fc-divider"></div>
+        <div class="fc-answer" style="color:${color}">${esc(w.back)}</div>
+        ${w.memo?`<div class="fc-memo">${esc(w.memo)}</div>`:''}
+      </div>
+      <div class="grade-grid">
+        <button class="gbtn g-again" onclick="grade('${w.id}',0)">覚えてない</button>
+        <button class="gbtn g-good" onclick="grade('${w.id}',3)" style="background:${color}18;color:${color};border-color:${color}40">覚えた！</button>
+      </div>`;
+  }
+}
+
+function flipCard(){S.quizFlipped=true;renderReviewContent()}
+
+function grade(id,score){
+  const w=S.words.find(x=>x.id===id);if(!w)return;
+  if(!S._nocal){
+    // normal: update SM-2
+    const stageIdx=STAGES.findIndex(s=>s.key===getStageForWord(w));
+    if(score===0){
+      w.totalMiss++;w.missStreak++;w.nextReview=Date.now();
+      if(!S._sessionMissed)S._sessionMissed=[];
+      if(!S._sessionMissed.includes(w.id))S._sessionMissed.push(w.id);
+    } else if(score===3){
+      w.missStreak=0;
+      const next=STAGES[Math.min(stageIdx+1,STAGES.length-1)];
+      w.interval=next.interval||0;w.nextReview=Date.now()+(next.interval||0)*DAY;
+    }
+    w.reviews++;
+  } else {
+    // no-cal mode: track missed only, don't update schedule
+    if(score===0){
+      if(!S._sessionMissed)S._sessionMissed=[];
+      if(!S._sessionMissed.includes(w.id))S._sessionMissed.push(w.id);
+    }
+  }
+  S.quizIdx++;S.quizFlipped=false;
+  save();updateBadges();
+  renderReviewContent();
+}
+
+function retryMissed(){
+  const ids=S._sessionMissed||[];
+  if(!ids.length)return;
+  const words=S.words.filter(w=>ids.includes(w.id));
+  // show no-cal warning then launch
+  pendingRetryWords=words;
+  pendingRetryLabel='間違えた単語の再挑戦';
+  document.getElementById('nocal-ok-btn').onclick=()=>{closeSheet('nocal');launchNoCal(pendingRetryWords,pendingRetryLabel)};
+  openSheet('nocal');
+}
+
+let pendingRetryWords=[];let pendingRetryLabel='';
+
+function launchNoCal(words,label){
+  S.quizQueue=words.map(w=>w.id).sort(()=>Math.random()-.5);
+  S.quizIdx=0;S.quizFlipped=false;S._nocal=true;S._sessionMissed=[];save();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');b.style.background='';b.style.color=''});
+  document.getElementById('page-review').classList.add('active');
+  document.getElementById('review-title').textContent=label;
+  document.getElementById('review-sub').textContent=`${words.length}件（カレンダー反映なし）`;
+  document.getElementById('screen').scrollTo(0,0);
+  renderReviewContent();
+}
+
+// ── HISTORY ──
+function addHistory(label,wordIds,color){
+  if(!S.history)S.history=[];
+  S.history.unshift({id:'h'+Date.now(),label,wordIds,color,date:Date.now()});
+  if(S.history.length>20)S.history=S.history.slice(0,20);
+  save();
+}
+
+function renderHistory(){
+  const el=document.getElementById('review-history-list');if(!el)return;
+  if(!S.history||!S.history.length){
+    el.innerHTML=`<p style="font-size:13px;color:var(--text3);padding:8px 0">まだ復習履歴がありません</p>`;
+    return;
+  }
+  el.innerHTML=S.history.map(h=>{
+    const d=new Date(h.date);
+    const label=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return`<div class="hist-item" onclick="replayHistory('${h.id}')">
+      <div class="hist-color" style="background:${h.color||'#059669'}"></div>
+      <div class="hist-body">
+        <div class="hist-title">${esc(h.label)}</div>
+        <div class="hist-meta">${label} · ${h.wordIds.length}件</div>
+      </div>
+      <button class="hist-retry" onclick="event.stopPropagation();replayHistory('${h.id}')">もう一度</button>
+    </div>`;
+  }).join('');
+}
+
+function replayHistory(hid){
+  const h=S.history?.find(x=>x.id===hid);if(!h)return;
+  const words=S.words.filter(w=>h.wordIds.includes(w.id));
+  if(!words.length){toast('単語が見つかりません');return}
+  pendingRetryWords=words;pendingRetryLabel=h.label+' (再挑戦)';
+  document.getElementById('nocal-ok-btn').onclick=()=>{closeSheet('nocal');launchNoCal(pendingRetryWords,pendingRetryLabel)};
+  openSheet('nocal');
+}
+
+// ── FILE REVIEW ──
+let fileReviewDeckId=null;
+function openFileReview(deckId){
+  fileReviewDeckId=deckId;
+  const dk=S.decks.find(d=>d.id===deckId);if(!dk)return;
+  const color=fileColor(dk);
+  const words=S.words.filter(w=>w.deck===deckId);
+  const missed=words.filter(w=>w.totalMiss>0);
+  document.getElementById('file-review-title').textContent=esc(dk.name);
+  document.getElementById('file-review-meta').textContent=`${words.length}単語 · 間違えたことがある ${missed.length}件`;
+
+  // style buttons with file color
+  const allBtn=document.getElementById('frb-all');
+  const wrongBtn=document.getElementById('frb-wrong');
+  const randBtn=document.getElementById('frb-random');
+  [allBtn,randBtn].forEach(b=>{
+    b.style.borderColor=color;
+    b.querySelector('.fmb-icon').style.background=color+'22';
+    b.querySelector('.fmb-title').style.color=color;
+    b.classList.remove('disabled');
+  });
+  document.getElementById('frb-all-sub').textContent=`全${words.length}件を順番通りに`;
+  document.getElementById('frb-random-sub').textContent=`全${words.length}件をランダムに`;
+
+  if(missed.length>0){
+    wrongBtn.style.borderColor=color;
+    wrongBtn.querySelector('.fmb-icon').style.background=color+'22';
+    wrongBtn.querySelector('.fmb-title').style.color=color;
+    wrongBtn.classList.remove('disabled');
+    document.getElementById('frb-wrong-sub').textContent=`${missed.length}件 · ミスした単語だけ`;
+    wrongBtn.onclick=()=>startFileReview('wrong');
+  } else {
+    wrongBtn.style.borderColor='';wrongBtn.querySelector('.fmb-title').style.color='';
+    wrongBtn.querySelector('.fmb-icon').style.background='';
+    wrongBtn.classList.add('disabled');
+    document.getElementById('frb-wrong-sub').textContent='まだ間違えた単語がありません';
+    wrongBtn.onclick=null;
+  }
+  openSheet('file-review');
+}
+
+function startFileReview(mode){
+  const dk=S.decks.find(d=>d.id===fileReviewDeckId);if(!dk)return;
+  let words=S.words.filter(w=>w.deck===fileReviewDeckId);
+  if(mode==='wrong')words=words.filter(w=>w.totalMiss>0);
+  if(mode==='random')words=[...words].sort(()=>Math.random()-.5);
+  // keep order for 'all'
+  if(!words.length){toast('対象の単語がありません');return}
+  closeSheet('file-review');
+  const label=dk.name+(mode==='wrong'?' · 間違えた単語':mode==='random'?' · ランダム':'');
+  pendingRetryWords=words;pendingRetryLabel=label;
+  document.getElementById('nocal-ok-btn').onclick=()=>{closeSheet('nocal');launchNoCal(pendingRetryWords,pendingRetryLabel)};
+  openSheet('nocal');
+}
+
+
+
+// ── CURVE ──
+// ── HABIT TRACKING ──
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function dateKey(ts){return new Date(ts).toISOString().slice(0,10)}
+
+function recordActivity(){
+  if(!S.activityLog)S.activityLog={};
+  const key=todayKey();
+  const cnt=(S.activityLog[key]||0)+1;
+  S.activityLog[key]=cnt;
+  save();
+}
+
+function getStreak(){
+  if(!S.activityLog)return{streak:0,best:0,total:0};
+  const today=new Date();today.setHours(0,0,0,0);
+  let streak=0,best=0,cur=0,total=0;
+  // check past 365 days
+  for(let i=0;i<365;i++){
+    const d=new Date(today.getTime()-i*DAY);
+    const k=d.toISOString().slice(0,10);
+    if(S.activityLog[k]){
+      if(i===0||streak>0){streak++;cur++;}
+      total++;
+    } else {
+      if(i===0)streak=0; // no activity today yet
+      if(cur>best)best=cur;
+      cur=0;
+      if(streak===0&&i>0)break;
+    }
+  }
+  if(cur>best)best=cur;
+  return{streak,best,total};
+}
+
+function renderHabit(){
+  const {streak,best,total}=getStreak();
+  document.getElementById('habit-streak-num').textContent=streak;
+  document.getElementById('habit-best').textContent=best+'日';
+  document.getElementById('habit-total').textContent=total+'日';
+  document.getElementById('habit-words-today').textContent=(S.activityLog&&S.activityLog[todayKey()])||0;
+  // accent color on streak
+  document.getElementById('habit-streak-num').style.color=streak>=7?'var(--amber)':streak>=3?'var(--green)':'var(--text3)';
+
+  // week view (last 7 days)
+  const DNAMES2=['日','月','火','水','木','金','土'];
+  const weekEl=document.getElementById('habit-week');
+  let weekHTML='';
+  for(let i=6;i>=0;i--){
+    const d=new Date(Date.now()-i*DAY);d.setHours(0,0,0,0);
+    const k=d.toISOString().slice(0,10);
+    const done=S.activityLog&&S.activityLog[k];
+    const isToday=i===0;
+    const cls=done?'active':isToday?'empty':'missed';
+    weekHTML+=`<div class="hw-cell ${cls}">
+      <span class="hw-dow">${DNAMES2[d.getDay()]}</span>
+      <span class="hw-num">${d.getDate()}</span>
+    </div>`;
+  }
+  weekEl.innerHTML=weekHTML;
+
+  // 90-day grid
+  const gridEl=document.getElementById('habit-grid');
+  let gridHTML='';
+  for(let i=89;i>=0;i--){
+    const d=new Date(Date.now()-i*DAY);d.setHours(0,0,0,0);
+    const k=d.toISOString().slice(0,10);
+    const done=S.activityLog&&S.activityLog[k];
+    const isToday=i===0;
+    gridHTML+=`<div class="hg-cell ${done?'done':isToday?'future':'missed'}" title="${k}"></div>`;
+  }
+  gridEl.innerHTML=gridHTML;
+}
+
+function renderCurve(){
+  renderHabit();
+  const words=[...S.words].sort((a,b)=>ret(a)-ret(b)).slice(0,12);
+  const bars=document.getElementById('ret-bars');
+  if(!words.length){bars.innerHTML='<p style="font-size:13px;color:var(--text3)">単語がまだありません</p>';return}
+  bars.innerHTML=words.map(w=>{
+    const r=ret(w);const fill=r>70?'#059669':r>40?'#d97706':'#dc2626';
+    return`<div class="ret-row">
+      <span class="ret-row-label">${esc(w.front)}</span>
+      <div class="ret-row-bar"><div class="ret-row-fill" style="width:${r}%;background:${fill}"></div></div>
+      <span class="ret-row-pct">${r}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ── SABORI BANNER ──
+function checkSabori(){
+  if(!S.activityLog)return;
+  const today=todayKey();
+  // find last active day
+  let missedDays=0;
+  for(let i=1;i<=30;i++){
+    const d=new Date(Date.now()-i*DAY);
+    const k=d.toISOString().slice(0,10);
+    if(S.activityLog[k]){break;}
+    missedDays=i;
+  }
+  if(missedDays>=1&&!S.activityLog[today]){
+    showSaboriBanner(missedDays);
+  }
+}
+
+function showSaboriBanner(days){
+  const existing=document.getElementById('sabori-banner');
+  if(existing)existing.remove();
+  const msg=days===1?'昨日サボってました 😅':`${days}日間サボってました 😱`;
+  const sub=days===1?'今日は復習しましょう！':`久しぶりですね！今日から再スタートしましょう 💪`;
+  const el=document.createElement('div');
+  el.id='sabori-banner';el.className='sabori-banner';
+  el.innerHTML=`<div class="sb-body"><div class="sb-title">${msg}</div><div class="sb-sub">${sub}</div></div>
+    <button class="sb-close" onclick="this.parentElement.remove()">閉じる</button>`;
+  document.body.appendChild(el);
+  setTimeout(()=>{if(el.parentElement)el.remove();},8000);
+}
+
+
+function exportData(){
+  const b=new Blob([JSON.stringify({decks:S.decks,words:S.words},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download=`memocurve_${new Date().toISOString().slice(0,10)}.json`;a.click();toast('エクスポートしました');
+}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.decks&&d.words){
+        if(confirm(`${d.words.length}件の単語をインポートしますか？`)){
+          const ids=new Set(S.words.map(w=>w.id));
+          d.words.forEach(w=>{if(!ids.has(w.id)){if(!w.missStreak)w.missStreak=0;if(!w.totalMiss)w.totalMiss=0;S.words.push(w)}});
+          d.decks.forEach(dk=>{if(!S.decks.find(x=>x.id===dk.id))S.decks.push(dk)});
+          save();renderAdd();renderWords();updateBadges();toast('インポートしました');
+        }
+      }
+    }catch{toast('読み込みに失敗しました')}
+  };r.readAsText(f);e.target.value='';
+}
+
+// Init
+(async()=>{
+  if(!S.activityLog)S.activityLog={};
+  // 今日の活動を即座に記録（クラウドより先に）
+  recordActivity();
+  save();
+
+  renderAdd();updateBadges();
+  const _initDk=S.decks.find(d=>d.id===S.activeDeck);
+  applyAccent(fileColor(_initDk));
+  S.words.forEach(w=>{if(w.interval===0&&!w.stuckSince)w.stuckSince=w.added||Date.now()});
+
+  // クラウドから最新データを取得
+  showSyncStatus('クラウドと同期中…');
+  const loaded=await loadFromCloud();
+  if(loaded){
+    // 今日の活動を再記録（クラウドデータで上書きされても保持）
+    recordActivity();
+    save();
+    renderAdd();updateBadges();
+    const dk=S.decks.find(d=>d.id===S.activeDeck);
+    applyAccent(fileColor(dk));
+  }
+  hideSyncStatus();
+  setTimeout(checkSabori,500);
+  setTimeout(checkStuckWords,1500);
+})();
+
+function showSyncStatus(msg){
+  let el=document.getElementById('sync-status');
+  if(!el){el=document.createElement('div');el.id='sync-status';el.style.cssText='position:fixed;bottom:calc(var(--tab-h) + var(--safe-bot) + 16px);left:50%;transform:translateX(-50%);background:rgba(26,26,30,.88);backdrop-filter:blur(12px);border-radius:12px;padding:8px 18px;font-size:13px;color:#fff;z-index:300;white-space:nowrap;';document.body.appendChild(el);}
+  el.textContent=msg;el.style.display='block';
+}
+function hideSyncStatus(){
+  const el=document.getElementById('sync-status');
+  if(el)el.style.display='none';
+}
+</script>
+</body>
+</html>
